@@ -1,0 +1,30 @@
+<!--
+// Project Open Standard Web Board Project Backend
+// allPosts.ejs
+// (c) 2024 Jeongwoo Kim, based on https://github.com/funnycom/doit-node/tree/main/myBlog
+-->
+<div class = "admin-title">
+    <h2>
+        <%= locals.title %>
+    </h2>
+    <a href="/add" class = "button">+ Add new post</a>
+</div>
+
+<ul class = "admin-posts">
+    <% data.forEach(post => { %>
+        <li>
+            <a href = "/post/<%= post._id %>">
+                <%= post.title %>
+            </a>
+            <% if (userid == post.userid) { %>
+            <div class = "admin-post-controls">
+                <a href = "/edit/<%= post._id %>" class = "btn">Edit</a>
+                <form action = "/delete/<%= post._id %>?_method=DELETE" method="POST">
+                    <input type = "submit" value = "Delete" class = "btn-delete btn">
+                </form>
+            </div>
+            <% } %>
+        </li>
+        <hr>
+    <% }) %>
+</ul>

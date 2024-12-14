@@ -1,0 +1,20 @@
+<!--
+// Project Open Standard Web Board Project Backend
+// login.ejs
+// (c) 2024 Jeongwoo Kim, based on https://github.com/funnycom/doit-node/tree/main/myBlog
+-->
+<h3>Login</h3>
+
+<form action="/login" method = "POST">
+    <label for="username"><b>User ID</b></label>
+    <input type = "text" placeholder = "Enter User ID" name = "username" id = "username" required>
+
+    <label for="password"><b>Password</b></label>
+    <input type = "password" placeholder = "Enter Password" name = "password" id = "password" required>
+
+    <input type = "submit" value = "Login" class = "btn">
+</form>
+<% if (error) { %>
+    <p class = "error"><%= error %></p>
+<% } %>
+<a href="/register">Don't have an account?</a>

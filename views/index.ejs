@@ -1,0 +1,23 @@
+<!--
+// Project Open Standard Web Board Project Backend
+// index.ejs
+// (c) 2024 Jeongwoo Kim, based on https://github.com/funnycom/doit-node/tree/main/myBlog
+-->
+<div class="top">
+<h1 class="top-heading">Open Standard Web Board Project</h1>
+<p class="top-body">This is an open-source program for a basic web bulletin board system that allows user registration, login, logout, posting, editing, deleting, and viewing of posts.</p>
+</div>
+
+<section class="articles">
+<h2 class="articles-heading">Recent Posts</h2>
+<ul class="article-ul">
+    <% data.forEach(post => { %>
+    <li>
+        <a href="/post/<%= post._id %>">
+        <span><%= post.title %></span>
+        <span class="article-list-date"><%= post.createdAt.toDateString() %></span>
+        </a>
+    </li>
+    <% }) %>
+</ul>
+</section>

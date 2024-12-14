@@ -1,0 +1,21 @@
+<!--
+// Project Open Standard Web Board Project Backend
+// addPost.ejs
+// (c) 2024 Jeongwoo Kim, based on https://github.com/funnycom/doit-node/tree/main/myBlog
+-->
+<a href = "/allPosts">&larr; Back</a>
+<div class = "admin-title">
+    <h2>
+        <%= locals.title %>
+    </h2>
+</div>
+
+<form action = "/add" method = "POST">
+    <label for = "title"><b>Post Title</b></label>
+    <input type = "text" placeholder="Post title" name = title id = "title">
+
+    <label for = "body"><b>Post content</b></label>
+    <textarea placeholder="Post content" name = "body" cols="50" rows="10"></textarea>
+
+    <input type = "submit" value="등록" class = "btn">
+</form>

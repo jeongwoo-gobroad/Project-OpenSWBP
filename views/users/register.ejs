@@ -1,0 +1,88 @@
+<!--
+// Project Open Standard Web Board Project Backend
+// register.ejs
+// (c) 2024 Jeongwoo Kim, based on https://github.com/funnycom/doit-node/tree/main/myBlog
+-->
+<h3>Register</h3>
+
+<form id = "register" action="/register" method = "POST">
+    <label for="username"><b>User ID (should be at least 8 characters long)</b></label>
+    <input type = "text" placeholder = "Enter User ID" name = "username" id = "username" required>
+    <span id = "userIDMessage"></span><br>
+
+    <label for="usernick"><b>User Nickname</b></label>
+    <input type = "text" placeholder = "Enter Nickname" name = "usernick" id = "usernick" required>
+
+    <label for="password"><b>Password (should be at least 8 characters long, with special characters, numbers and alphabets.)</b></label>
+    <input type = "password" placeholder = "Enter Password" name = "password" id = "password" required>
+
+    <label for="password2"><b>Re-enter Password</b></label>
+    <input type = "password" placeholder = "Enter Password" name = "password2" id = "password2" required>
+
+    <span id = "message" class = "error"></span><br><br>
+
+    <input type = "submit" value = "Register" class = "btn">
+</form>
+
+<script>
+    function validatePassword(passwd) {
+        const regex = /^(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+        if (regex.test(passwd)) {
+            return true;
+        }
+
+        return false;
+    }
+    function validateID(id) {
+        if (id.length >= 8) {
+            return true;
+        }
+
+        return false;
+    }
+    document.getElementById('username').addEventListener('input', () => {
+        const username = document.getElementById('username').value;
+        const userIDMessage = document.getElementById('userIDMessage');
+
+        fetch('/checkUserID', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `username=${username}`
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.exists) {
+                userIDMessage.textContent = "ID Already in use";
+                userIDMessage.className = "error";
+            } else {
+                userIDMessage.textContent = "Acceptable ID";
+                userIDMessage.className = "success";
+            }
+        })
+        .catch((error) => {
+            console.log("error occured at checkUserID");
+        })
+    });
+    document.getElementById('register').addEventListener('submit', (event) => {
+        const password = document.getElementById('password').value;
+        const password2 = document.getElementById('password2').value;
+        const id = document.getElementById('username');
+        const message = document.getElementById('message');
+
+        if (password !== password2) {
+            event.preventDefault();
+            message.textContent = 'Passwords do not match';
+        } else if (validatePassword(password) === false) {
+            event.preventDefault();
+            message.textContent = 'Password should be at least 8 characters long, with special characters, numbers and alphabets.';
+        } else if (validateID(id) === false) {
+            event.preventDefault();
+            message.textContent = 'User ID should be at least 8 characters long';
+        } else {
+            message.textContent = '';
+        }
+    });
+</script>

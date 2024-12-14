@@ -1,0 +1,55 @@
+<!--
+// Project Open Standard Web Board Project Backend
+// user_login.ejs
+// (c) 2024 Jeongwoo Kim, based on https://github.com/funnycom/doit-node/tree/main/myBlog
+-->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= locals.title %></title>
+  <meta name="description" content="My first application using Node.js, Express and MongoDB">
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  
+  <div class="container">   
+
+    <header class="header">
+      <a href="/" class="header-logo">OpenSWBP</a>
+
+      <nav class="header-nav">
+        <ul>
+          <li>
+            <a href="/home">Home</a>
+          </li>
+          <li>
+            <a href="/allPosts">All Posts</a>
+          </li>
+          <li>
+            <a href="/myPosts">My Posts</a>
+          </li>
+          <li>
+            <a href="/about">About</a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- 관리자 로그인 -->
+      <div class="header-button">
+        Hello, <%= user.nickname %>!
+        &nbsp;
+        <a href="/logout">Logout</a>
+      </div>
+    </header>
+
+    <!-- 메인 : 실제 내용이 들어갈 부분 -->    
+    <main class="main">
+        <%- body %>
+    </main>
+  </div>  
+
+</body>
+</html>
