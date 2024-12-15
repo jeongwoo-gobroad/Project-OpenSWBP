@@ -8,7 +8,7 @@
 <form id = "register" action="/register" method = "POST">
     <label for="username"><b>User ID (should be at least 8 characters long)</b></label>
     <input type = "text" placeholder = "Enter User ID" name = "username" id = "username" required>
-    <span id = "userIDMessage"></span><br>
+    <span id = "userIDMessage"></span><br><br>
 
     <label for="usernick"><b>User Nickname</b></label>
     <input type = "text" placeholder = "Enter Nickname" name = "usernick" id = "usernick" required>
@@ -19,7 +19,7 @@
     <label for="password2"><b>Re-enter Password</b></label>
     <input type = "password" placeholder = "Enter Password" name = "password2" id = "password2" required>
 
-    <span id = "message" class = "error"></span><br><br>
+    <span id = "passwordMessage"></span><br><br>
 
     <input type = "submit" value = "Register" class = "btn">
 </form>
@@ -34,6 +34,7 @@
 
         return false;
     }
+
     function validateID(id) {
         if (id.length >= 8) {
             return true;
@@ -41,6 +42,7 @@
 
         return false;
     }
+
     document.getElementById('username').addEventListener('input', () => {
         const username = document.getElementById('username').value;
         const userIDMessage = document.getElementById('userIDMessage');
@@ -57,6 +59,9 @@
             if (data.exists) {
                 userIDMessage.textContent = "ID Already in use";
                 userIDMessage.className = "error";
+            } else if (validateID(username) === false) {
+                userIDMessage.textContent = 'User ID should be at least 8 characters long';
+                userIDMessage.className = "error";
             } else {
                 userIDMessage.textContent = "Acceptable ID";
                 userIDMessage.className = "success";
@@ -66,23 +71,85 @@
             console.log("error occured at checkUserID");
         })
     });
-    document.getElementById('register').addEventListener('submit', (event) => {
+
+    document.getElementById('password').addEventListener('input', () => {
         const password = document.getElementById('password').value;
         const password2 = document.getElementById('password2').value;
-        const id = document.getElementById('username');
-        const message = document.getElementById('message');
+        const passwordMessage = document.getElementById('passwordMessage');
 
         if (password !== password2) {
             event.preventDefault();
-            message.textContent = 'Passwords do not match';
+            passwordMessage.textContent = 'Passwords do not match';
+            passwordMessage.className = "error";
         } else if (validatePassword(password) === false) {
             event.preventDefault();
-            message.textContent = 'Password should be at least 8 characters long, with special characters, numbers and alphabets.';
-        } else if (validateID(id) === false) {
-            event.preventDefault();
-            message.textContent = 'User ID should be at least 8 characters long';
+            passwordMessage.textContent = 'Password should be at least 8 characters long, with special characters, numbers and alphabets.';
+            passwordMessage.className = "error";
         } else {
-            message.textContent = '';
+            passwordMessage.textContent = 'Passwords satisfy the criteria';
+            passwordMessage.className = "success";
+        }
+    });
+
+    document.getElementById('password2').addEventListener('input', () => {
+        const password = document.getElementById('password').value;
+        const password2 = document.getElementById('password2').value;
+        const passwordMessage = document.getElementById('passwordMessage');
+
+        if (password !== password2) {
+            event.preventDefault();
+            passwordMessage.textContent = 'Passwords do not match';
+            passwordMessage.className = "error";
+        } else if (validatePassword(password) === false) {
+            event.preventDefault();
+            passwordMessage.textContent = 'Password should be at least 8 characters long, with special characters, numbers and alphabets.';
+            passwordMessage.className = "error";
+        } else {
+            passwordMessage.textContent = 'Passwords satisfy the criteria';
+            passwordMessage.className = "success";
+        }
+    });
+
+    document.getElementById('register').addEventListener('submit', (event) => {
+        const password = document.getElementById('password').value;
+        const password2 = document.getElementById('password2').value;
+        const passwordMessage = document.getElementById('passwordMessage');
+        const username = document.getElementById('username').value;
+        const userIDMessage = document.getElementById('userIDMessage');
+
+        fetch('/checkUserID', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: `username=${username}`
+        })
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.exists) {
+                event.preventDefault();
+                userIDMessage.textContent = "ID Already in use";
+                userIDMessage.className = "error";
+            }
+        })
+        .catch((error) => {
+            console.log("error occured at checkUserID");
+        })
+
+        if (password !== password2) {
+            event.preventDefault();
+            passwordMessage.textContent = 'Passwords do not match';
+            passwordMessage.className = "error";
+        } else if (validatePassword(password) === false) {
+            event.preventDefault();
+            passwordMessage.textContent = 'Password should be at least 8 characters long, with special characters, numbers and alphabets.';
+            passwordMessage.className = "error";
+        } else if (validateID(username) === false) {
+            event.preventDefault();
+            userIDMessage.textContent = 'User ID should be at least 8 characters long';
+            userIDMessage.className = "error";
+        } else {
+            passwordMessage.textContent = '';
         }
     });
 </script>

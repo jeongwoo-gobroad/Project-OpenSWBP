@@ -16,7 +16,7 @@
             <a href = "/post/<%= post._id %>">
                 <%= post.title %>
             </a>
-            <% if (userid == post.userid) { %>
+            <% if (user._id == post.userid) { %>
             <div class = "admin-post-controls">
                 <a href = "/edit/<%= post._id %>" class = "btn">Edit</a>
                 <form action = "/delete/<%= post._id %>?_method=DELETE" method="POST">

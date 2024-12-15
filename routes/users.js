@@ -11,22 +11,8 @@ const User = require("../models/User");
 const Post = require("../models/Post");
 const jwt = require("jsonwebtoken");
 const jwtSecret = process.env.JWT_SECRET;
-
-const checkLogin = (req, res, next) => {
-    const token = req.cookies.token;
-
-    if (!token) {
-        res.redirect("/login");
-    }
-
-    try {
-        const decoded = jwt.verify(token, jwtSecret);
-        req.userId = decoded.userId;
-        next();
-    } catch (error) {
-        res.redirect("/login");
-    }
-};
+const checkLogin = require("./checkLogin");
+const checkValidTitle = require("./checkValid");
 
 router.get(
     "/login", 
@@ -131,24 +117,12 @@ router.get(
             title: "Posts",
         };
         
-        const token = req.cookies.token;
-        let userid;
-
-        try {
-            const decoded = jwt.verify(token, jwtSecret);
-            // console.log(decoded.id);
-            userid = decoded.id;
-        } catch (error) {
-            res.redirect("/login");
-        }
-
         const data = await Post.find().sort({updatedAt: "desc", createdAt: "desc"});
 
         const user = req.session.user;
 
         res.render("users/allPosts", {
             locals,
-            userid,
             data,
             user,
             layout: user_login_layout,
@@ -185,24 +159,17 @@ router.post(
     asyncHandler(async (req, res) => {
         const {title, body} = req.body;
 
-        const token = req.cookies.token;
-        let userid;
+        const user = req.session.user;
 
-        try {
-            const decoded = jwt.verify(token, jwtSecret);
-            // console.log(decoded.id);
-            userid = decoded.id;
-        } catch (error) {
-            return res.redirect("/login");
+        if (title.length >= 5 && body.length >= 10 && !checkValidTitle(title)) {
+            const newPost = new Post({
+                title: title,
+                userid: user._id,
+                body: body,
+            });
+    
+            await Post.create(newPost);
         }
-
-        const newPost = new Post({
-            title: title,
-            userid: userid,
-            body: body,
-        });
-
-        await Post.create(newPost);
 
         res.redirect("/allPosts");
     })
@@ -218,22 +185,13 @@ router.get(
 
         const data = await Post.findOne({_id: req.params.id});
 
-        const token = req.cookies.token;
-        let userid;
+        const user = req.session.user;
 
-        try {
-            const decoded = jwt.verify(token, jwtSecret);
-            // console.log(decoded.id);
-            userid = decoded.id;
-        } catch (error) {
-            return res.redirect("/login");
-        }
-
-        if (userid != data.userid) {
+        if (user._id != data.userid) {
             return res.redirect("/allPosts");
         }
-        const user = req.session.user;
-        res.render("admin/edit", {
+
+        res.render("users/editPost", {
             locals,
             data,
             user,
@@ -246,11 +204,13 @@ router.put(
     "/edit/:id",
     checkLogin,
     asyncHandler(async (req, res) => {
-        await Post.findByIdAndUpdate(req.params.id, {
-            title: req.body.title,
-            body: req.body.body,
-            createdAt: Date.now(),
-        });
+        if (req.body.title.length >= 5 && req.body.body.length >= 10 && !checkValidTitle(req.body.title)) {
+            await Post.findByIdAndUpdate(req.params.id, {
+                title: req.body.title,
+                body: req.body.body,
+                createdAt: Date.now(),
+            });
+        }
         res.redirect("/allPosts");
     })
 );
@@ -259,18 +219,9 @@ router.delete(
     "/delete/:id",
     checkLogin,
     asyncHandler(async (req, res) => {
-        const token = req.cookies.token;
-        let userid;
-
         const data = await Post.findOne({_id: req.params.id});
 
-        try {
-            const decoded = jwt.verify(token, jwtSecret);
-            // console.log(decoded.id);
-            userid = decoded.id;
-        } catch (error) {
-            return res.redirect("/login");
-        }
+        const userid = req.session.user._id;
 
         if (userid != data.userid) {
             return res.redirect("/allPosts");
@@ -289,26 +240,14 @@ router.get(
             title: "Posts",
         };
         
-        const token = req.cookies.token;
-        let userid;
-
-        try {
-            const decoded = jwt.verify(token, jwtSecret);
-            // console.log(decoded.id);
-            userid = decoded.id;
-        } catch (error) {
-            res.redirect("/login");
-        }
-
-        const data = await Post.findAll({
-            userid: userid
-        }).sort({updatedAt: "desc", createdAt: "desc"});
-
         const user = req.session.user;
+
+        const data = await Post.find({
+            userid: user._id
+        }).sort({updatedAt: "desc", createdAt: "desc"});
 
         res.render("users/myPosts", {
             locals,
-            userid,
             data,
             user,
             layout: user_login_layout,

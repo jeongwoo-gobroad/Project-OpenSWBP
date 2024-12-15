@@ -7,6 +7,7 @@ const mainLayout = "../views/layouts/main.ejs";
 const user_login_layout = "../views/layouts/user_login";
 const Post = require("../models/Post");
 const asynchandler = require("express-async-handler");
+const checkLogin = require("./checkLogin");
 
 router.get(["/", "/home"], 
     asynchandler(async(req, res) => {
@@ -15,8 +16,9 @@ router.get(["/", "/home"],
         };
 
         const data = await Post.find({}).sort({updatedAt: "desc", createdAt: "desc"});
-        if (req.cookies.token) {
-            res.render("index", {locals, data, layout: user_login_layout});
+        if (req.session.user) {
+            const user = req.session.user;
+            res.render("index", {locals, data, user, layout: user_login_layout});
         } else {
             res.render("index", {locals, data, layout: mainLayout});
         }
@@ -27,8 +29,9 @@ router.get("/about", (req, res) => {
     const locals = {
         title: "About",
     };
-    if (req.cookies.token) {
-        res.render("about", {locals, layout: user_login_layout});
+    if (req.session.user) {
+        const user = req.session.user;
+        res.render("about", {locals, user, layout: user_login_layout});
     } else {
         res.render("about", {locals, layout: mainLayout});   
     }
@@ -38,8 +41,9 @@ router.get(
     "/post/:id",
     asynchandler(async (req, res) => {
         const data = await Post.findOne({_id: req.params.id});
-        if (req.cookies.token) {
-            res.render("post", {data, layout: user_login_layout});
+        if (req.session.user) {
+            const user = req.session.user;
+            res.render("post", {data, user, layout: user_login_layout});
         } else {
             res.render("post", {data, layout: mainLayout});
         }

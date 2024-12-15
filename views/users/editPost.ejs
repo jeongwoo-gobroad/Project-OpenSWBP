@@ -11,12 +11,90 @@
         <input type = "submit" value="Delete" class = "btn-delete btn">
     </form>
 </div>
-<form action="/edit/<%= data.id %>?_method=PUT" method="POST">
+<form action="/edit/<%= data.id %>?_method=PUT" id = "edit" method="POST">
     <label for = "title"><b>Post title</b></label>
     <input type = "text" name = title id = "title" value = "<%= data.title %>">
+    <span id = "postTitleMessage"></span><br><br>
 
     <label for = "body"><b>Post content</b></label>
-    <textarea name = "body" cols="50" rows="10"><%= data.body %></textarea>
+    <textarea name = "body" cols="50" id = "body" rows="10"><%= data.body %></textarea>
+    <span id = "postContentMessage"></span><br><br>
 
     <input type = "submit" value="Edit" class = "btn">
 </form>
+
+<script>
+    function titleLengthCheck(title) {
+        if (title.length >= 5) {
+            return true;
+        }
+
+        return false;
+    }
+
+    function titleBlankCheck(title) {
+        const regex = /^\s*$/;
+        
+        return regex.test(title);
+    }
+
+    function contentLengthCheck(content) {
+        if (content.length >= 10) {
+            return true;
+        }
+
+        return false;
+    }
+
+    document.getElementById('title').addEventListener('input', () => {
+        const title = document.getElementById('title').value;
+        const titleMessage = document.getElementById('postTitleMessage');
+
+        if (titleLengthCheck(title) && !titleBlankCheck(title)) {
+            titleMessage.textContent = "Nice title!";
+            titleMessage.className = "success";
+        } else if (titleBlankCheck(title)) {
+            titleMessage.textContent = "The post title should not be all blank.";
+            titleMessage.className = "error";
+        } else {
+            titleMessage.textContent = "The post title should be at least 5 characters long.";
+            titleMessage.className = "error";
+        }
+    });
+
+    document.getElementById('body').addEventListener('input', () => {
+        const body = document.getElementById('body').value;
+        const bodyMessage = document.getElementById('postContentMessage');
+
+        if (contentLengthCheck(body)) {
+            bodyMessage.textContent = "Nice content!";
+            bodyMessage.className = "success";
+        } else {
+            bodyMessage.textContent = "The post content should be at least 10 characters long.";
+            bodyMessage.className = "error";
+        }
+    });
+
+    document.getElementById('edit').addEventListener('submit', (event) => {
+        const title = document.getElementById('title').value;
+        const titleMessage = document.getElementById('postTitleMessage');
+        const body = document.getElementById('body').value;
+        const bodyMessage = document.getElementById('postContentMessage');
+
+        if (!titleLengthCheck(title)) {
+            event.preventDefault();
+            titleMessage.textContent = "The post title should be at least 5 characters long.";
+            titleMessage.className = "error";
+        } 
+        if (!contentLengthCheck(body)) {
+            event.preventDefault();
+            bodyMessage.textContent = "The post content should be at least 10 characters long.";
+            bodyMessage.className = "error";
+        } 
+        if (titleBlankCheck(title)) {
+            event.preventDefault();
+            titleMessage.textContent = "The post title should not be all blank.";
+            titleMessage.className = "error";
+        }
+    });
+</script>

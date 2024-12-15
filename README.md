@@ -8,3 +8,8 @@
 >> PORT = your_port_number
 >>
 >> SESS_SECRET = your_session_secret_code
+
+## Version History
+    0.1.0:
+
+        Added session-based login validation and post title and content validation functionalities to both the front-end and back-end.
