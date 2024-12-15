@@ -117,7 +117,22 @@ router.get(
             title: "Posts",
         };
         
-        const data = await Post.find().sort({updatedAt: "desc", createdAt: "desc"});
+        // const data = await Post.find().sort({updatedAt: "desc", createdAt: "desc"});
+        const data = await Post.aggregate([
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "userid",
+                    foreignField: "_id",
+                    as: "userDetails"
+                }
+            }
+        ]).sort({updatedAt: "desc", createdAt: "desc"});
+
+        // data.forEach((element) => {
+        //     console.log(element);
+        //     console.log(element.userDetails[0]);
+        // });
 
         const user = req.session.user;
 

@@ -16,6 +16,7 @@
             <a href = "/post/<%= post._id %>">
                 <%= post.title %>
             </a>
+            &nbsp;
             <% if (user._id === post.userid) { %>
             <div class = "admin-post-controls">
                 <a href = "/edit/<%= post._id %>" class = "btn">편집</a>
