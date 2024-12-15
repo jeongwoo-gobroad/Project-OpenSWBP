@@ -15,7 +15,17 @@ router.get(["/", "/home"],
             title: "Home",
         };
 
-        const data = await Post.find({}).sort({updatedAt: "desc", createdAt: "desc"});
+        const data = await Post.aggregate([
+            {
+                $lookup: {
+                    from: "users",
+                    localField: "userid",
+                    foreignField: "_id",
+                    as: "userDetails"
+                }
+            }
+        ]).sort({updatedAt: "desc", createdAt: "desc"});
+
         if (req.session.user) {
             const user = req.session.user;
             res.render("index", {locals, data, user, layout: user_login_layout});
