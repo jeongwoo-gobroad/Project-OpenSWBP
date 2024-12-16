@@ -19,3 +19,7 @@
         - Added a feature to the All Posts page that allows users to see the nickname of each post's author.
         - Added a feature to the Home(/) page that allows users to see the nickname of each post's author.
         - Fixed a bug with myPosts.ejs
+    
+    0.3.0:
+
+        - Additionally implemented input validation also on the back-end that was previously performed on the front-end.

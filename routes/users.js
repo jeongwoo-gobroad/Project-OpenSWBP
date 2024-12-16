@@ -12,7 +12,7 @@ const Post = require("../models/Post");
 const jwt = require("jsonwebtoken");
 const jwtSecret = process.env.JWT_SECRET;
 const checkLogin = require("./checkLogin");
-const checkValidTitle = require("./checkValid");
+const checkValid = require("./checkValid");
 
 router.get(
     "/login", 
@@ -92,6 +92,21 @@ router.post(
     "/register",
     asyncHandler(async (req, res) => {
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
+        /* Exception handling */
+        if (checkValid.checkValidID(req.body.username) === false) {
+            res.redirect("/errorOccured");
+            return;
+        }
+        if (checkValid.checkValidPassword(req.body.password) === false) {
+            res.redirect("/errorOccured");
+            return;
+        }
+        if (req.body.password != req.body.password2) {
+            res.redirect("/errorOccured");
+            return;
+        }
+
         try {
             const user = await User.create({
                 username: req.body.username,
@@ -104,7 +119,8 @@ router.post(
     
             res.render("users/accountCreated", {locals, layout: user_nologin_layout});
         } catch (error) {
-            res.redirect("/register");
+            res.redirect("/errorOccured");
+            return;
         }
     })
 );
@@ -176,7 +192,7 @@ router.post(
 
         const user = req.session.user;
 
-        if (title.length >= 5 && body.length >= 10 && !checkValidTitle(title)) {
+        if (title.length >= 5 && body.length >= 10 && !checkValid.checkValidTitle(title)) {
             const newPost = new Post({
                 title: title,
                 userid: user._id,
@@ -184,6 +200,9 @@ router.post(
             });
     
             await Post.create(newPost);
+        } else {
+            res.redirect("/errorOccured");
+            return;
         }
 
         res.redirect("/allPosts");

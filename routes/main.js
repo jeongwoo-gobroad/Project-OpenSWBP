@@ -58,6 +58,6 @@ router.get(
             res.render("post", {data, layout: mainLayout});
         }
     })
-)
+);
 
 module.exports = router;

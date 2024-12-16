@@ -4,4 +4,14 @@ const checkValidTitle = (title) => {
     return regex.test(title);
 };
 
-module.exports = checkValidTitle;
+const checkValidPassword = (password) => {
+    const regex = /^(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+    return regex.test(password);
+};
+
+const checkValidID = (id) => {
+    return id.length >= 8;
+}
+
+module.exports = {checkValidTitle, checkValidPassword, checkValidID};

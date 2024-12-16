@@ -36,6 +36,7 @@ app.use(express.urlencoded({extended: true}));
 
 app.use("/", require("./routes/main"));
 app.use("/", require("./routes/users"))
+app.use("/", require("./routes/exceptionRoute"));
 
 app.listen(port, () => {
     console.log(`App listening on port ${port}`);
